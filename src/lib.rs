@@ -151,6 +151,15 @@ impl<'a, T> Iterator for FnQueueIter<'a, T> {
     }
 }
 
+impl<'a, T> IntoIterator for &'a FnQueue<T> {
+    type Item = &'a T;
+    type IntoIter = FnQueueIter<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
 #[test]
 fn test_push_pop_simple() {
     let mut q = FnQueue::new();
@@ -208,7 +217,7 @@ fn test_iter_for() {
         q.push_back(i);
     }
     let mut i = 0;
-    for j in q.iter() {
+    for j in &q {
         assert_eq!(i, *j);
         i += 1;
     }
