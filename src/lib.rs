@@ -104,6 +104,51 @@ impl<T> FnQueue<T> {
     pub fn len(&self) -> usize {
         self.front.len() + self.back.len()
     }
+
+    pub fn iter(&self) -> FnQueueIter<'_, T> {
+        FnQueueIter::new(self)
+    }
+}
+
+impl<T> Iterator for FnQueue<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.pop_front()
+    }
+}
+
+/// Iterator producing references to elements of a
+/// [FnQueue] in front-to-back order.
+pub struct FnQueueIter<'a, T> {
+    q: &'a FnQueue<T>,
+    posn: usize,
+}
+
+impl<'a, T> FnQueueIter<'a, T> {
+    pub fn new(q: &'a FnQueue<T>) -> Self {
+        Self { q, posn: 0 }
+    }
+}
+
+impl<'a, T> Iterator for FnQueueIter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let nfront = self.q.front.len();
+        if self.posn >= nfront {
+            let nback = self.q.back.len();
+            if self.posn >= nfront + nback {
+                return None;
+            }
+            let result = &self.q.back[self.posn - nfront];
+            self.posn += 1;
+            return Some(result);
+        }
+        let result = &self.q.front[nfront - self.posn - 1];
+        self.posn += 1;
+        Some(result)
+    }
 }
 
 #[test]
@@ -130,4 +175,41 @@ fn test_push_pop_more() {
         assert_eq!(Some(i), q.pop_front());
     }
     assert_eq!(None, q.pop_front());
+}
+
+#[test]
+fn test_into_iter() {
+    let mut q = FnQueue::new();
+    for i in 0..=3 {
+        q.push_back(i);
+    }
+    for (i, j) in q.into_iter().enumerate() {
+        assert_eq!(i, j);
+    }
+}
+
+#[test]
+fn test_into_iter_for() {
+    let mut q = FnQueue::new();
+    for i in 0..=3 {
+        q.push_back(i);
+    }
+    let mut i = 0;
+    for j in q {
+        assert_eq!(i, j);
+        i += 1;
+    }
+}
+
+#[test]
+fn test_iter_for() {
+    let mut q = FnQueue::new();
+    for i in 0..=3 {
+        q.push_back(i);
+    }
+    let mut i = 0;
+    for j in q.iter() {
+        assert_eq!(i, *j);
+        i += 1;
+    }
 }
