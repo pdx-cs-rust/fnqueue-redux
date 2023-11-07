@@ -53,9 +53,8 @@ impl<T> FnQueue<T> {
     /// ```
     pub fn pop_front(&mut self) -> Option<T> {
         self.front.pop().or_else(|| {
-            while let Some(x) = self.back.pop() {
-                self.front.push(x);
-            }
+            self.back.reverse();
+            std::mem::swap(&mut self.front, &mut self.back);
             self.front.pop()
         })
     }
