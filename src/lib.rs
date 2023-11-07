@@ -104,8 +104,8 @@ impl<T> FnQueue<T> {
         self.front.len() + self.back.len()
     }
 
-    pub fn iter(&self) -> FnQueueIter<'_, T> {
-        FnQueueIter::new(self)
+    pub fn iter(&self) -> Iter<'_, T> {
+        Iter::new(self)
     }
 }
 
@@ -119,18 +119,18 @@ impl<T> Iterator for FnQueue<T> {
 
 /// Iterator producing references to elements of a
 /// [FnQueue] in front-to-back order.
-pub struct FnQueueIter<'a, T> {
+pub struct Iter<'a, T> {
     q: &'a FnQueue<T>,
     posn: usize,
 }
 
-impl<'a, T> FnQueueIter<'a, T> {
+impl<'a, T> Iter<'a, T> {
     pub fn new(q: &'a FnQueue<T>) -> Self {
         Self { q, posn: 0 }
     }
 }
 
-impl<'a, T> Iterator for FnQueueIter<'a, T> {
+impl<'a, T> Iterator for Iter<'a, T> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -152,7 +152,7 @@ impl<'a, T> Iterator for FnQueueIter<'a, T> {
 
 impl<'a, T> IntoIterator for &'a FnQueue<T> {
     type Item = &'a T;
-    type IntoIter = FnQueueIter<'a, T>;
+    type IntoIter = Iter<'a, T>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
