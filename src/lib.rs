@@ -10,6 +10,7 @@ but the input stack is not, "unstack" the input stack onto
 the output stack, then pop from the output stack.
 */
 
+#[derive(Clone, Hash, Debug)]
 /// "Functional" queue.
 pub struct FnQueue<T> {
     front: Vec<T>,
@@ -119,6 +120,7 @@ impl<T> Iterator for FnQueue<T> {
 
 /// Iterator producing references to elements of a
 /// [FnQueue] in front-to-back order.
+#[derive(Clone, Hash, Debug)]
 pub struct Iter<'a, T> {
     q: &'a FnQueue<T>,
     posn: usize,
